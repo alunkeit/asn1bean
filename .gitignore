@@ -14,3 +14,6 @@ out/
 .metadata/
 **/bin/main/
 **/bin/test/
+
+# Other
+projects/asn1bean-compiler/src/test/java-gen/
