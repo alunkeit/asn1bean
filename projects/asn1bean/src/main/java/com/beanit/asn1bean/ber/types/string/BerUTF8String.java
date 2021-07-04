@@ -38,6 +38,7 @@ public class BerUTF8String extends BerOctetString {
 
   @Override
   public String toString() {
+    // return new String("BerUTF8String: " + new String(value, StandardCharsets.UTF_8));
     return new String(value, StandardCharsets.UTF_8);
   }
 

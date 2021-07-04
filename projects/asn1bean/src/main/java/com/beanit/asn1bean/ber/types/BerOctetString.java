@@ -15,8 +15,10 @@ package com.beanit.asn1bean.ber.types;
 
 import com.beanit.asn1bean.ber.BerLength;
 import com.beanit.asn1bean.ber.BerTag;
+import com.beanit.asn1bean.ber.UnknownTypeHandler;
 import com.beanit.asn1bean.ber.internal.Util;
 import com.beanit.asn1bean.util.HexString;
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,8 +137,17 @@ public class BerOctetString implements Serializable, BerType {
     return codeLength;
   }
 
+  private String getReadableRepresentation() {
+    try {
+      return UnknownTypeHandler.decode(new ByteArrayInputStream(value)).toString();
+    } catch (Exception e) {
+      return HexString.fromBytes(value);
+    }
+  }
+
   @Override
   public String toString() {
-    return HexString.fromBytes(value);
+
+    return getReadableRepresentation();
   }
 }

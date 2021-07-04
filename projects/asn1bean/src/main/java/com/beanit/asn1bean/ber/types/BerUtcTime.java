@@ -81,7 +81,7 @@ public class BerUtcTime extends BerVisibleString {
   @SuppressWarnings("WeakerAccess")
   Calendar asCalendar() throws ParseException {
 
-    Matcher matcher = utcTimePattern.matcher(toString());
+    Matcher matcher = utcTimePattern.matcher(super.toString());
 
     if (!matcher.find()) throw new ParseException("", 0);
 
@@ -114,5 +114,14 @@ public class BerUtcTime extends BerVisibleString {
 
   Date asDate() throws ParseException {
     return asCalendar().getTime();
+  }
+
+  @Override
+  public String toString() {
+    try {
+      return asDate().toString();
+    } catch (Exception e) {
+      return super.toString();
+    }
   }
 }

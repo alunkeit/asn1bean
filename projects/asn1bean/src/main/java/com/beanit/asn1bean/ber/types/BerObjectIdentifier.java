@@ -15,6 +15,7 @@ package com.beanit.asn1bean.ber.types;
 
 import com.beanit.asn1bean.ber.BerLength;
 import com.beanit.asn1bean.ber.BerTag;
+import com.beanit.asn1bean.ber.OIDRepository;
 import com.beanit.asn1bean.ber.internal.Util;
 import java.io.IOException;
 import java.io.InputStream;
@@ -194,6 +195,26 @@ public class BerObjectIdentifier implements Serializable, BerType {
     for (int i = 1; i < value.length; i++) {
       sb.append(".").append(value[i]);
     }
+
+    return OIDRepository.translate(sb.toString());
+  }
+
+  /**
+   * Returns the dot-notation of the oid. Use this method instead of toString()
+   *
+   * @return String - the dotted notation of the asn.1 oid
+   */
+  public String getDotNotation() {
+    if (value == null || value.length == 0) {
+      return "";
+    }
+
+    StringBuilder sb = new StringBuilder(Integer.toString(value[0]));
+
+    for (int i = 1; i < value.length; i++) {
+      sb.append(".").append(value[i]);
+    }
+
     return sb.toString();
   }
 }

@@ -13,13 +13,12 @@
  */
 package com.beanit.asn1bean.ber.types.string;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import com.beanit.asn1bean.ber.BerTag;
 import com.beanit.asn1bean.ber.types.BerOctetString;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class BerPrintableString extends BerOctetString {
 
@@ -35,7 +34,9 @@ public class BerPrintableString extends BerOctetString {
 
   @Override
   public String toString() {
-    return new String(value, UTF_8);
+    // String s = new String(value, StandardCharsets.UTF_8);
+    // return new String("BerPrintableString: " + s);
+    return new String(value, StandardCharsets.UTF_8);
   }
 
   @Override

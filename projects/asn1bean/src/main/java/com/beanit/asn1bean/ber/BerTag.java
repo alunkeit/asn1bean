@@ -19,8 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Optional;
 
-public class BerTag implements Serializable {
+public class BerTag implements Serializable, Cloneable {
 
   public static final int UNIVERSAL_CLASS = 0x00;
   public static final int APPLICATION_CLASS = 0x40;
@@ -245,5 +246,22 @@ public class BerTag implements Serializable {
         + primitive
         + ", tag number: "
         + tagNumber;
+  }
+
+  @Override
+  public BerTag clone() {
+    BerTag t = new BerTag();
+    t.primitive = this.primitive;
+    t.tagClass = this.tagClass;
+    t.tagNumber = this.tagNumber;
+
+    Optional.ofNullable(tagBytes)
+        .ifPresent(
+            n -> {
+              t.tagBytes = new byte[this.tagBytes.length];
+              System.arraycopy(tagBytes, 0, t.tagBytes, 0, tagBytes.length);
+            });
+
+    return t;
   }
 }

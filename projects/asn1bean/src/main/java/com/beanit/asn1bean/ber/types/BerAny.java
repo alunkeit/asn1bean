@@ -15,7 +15,9 @@ package com.beanit.asn1bean.ber.types;
 
 import com.beanit.asn1bean.ber.BerTag;
 import com.beanit.asn1bean.ber.DecodeUtil;
+import com.beanit.asn1bean.ber.UnknownTypeHandler;
 import com.beanit.asn1bean.util.HexString;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +29,8 @@ public class BerAny implements Serializable, BerType {
   private static final long serialVersionUID = 1L;
 
   public byte[] value;
+
+  public BerTag decodedTag;
 
   public BerAny() {}
 
@@ -58,13 +62,32 @@ public class BerAny implements Serializable, BerType {
     } else {
       tag.encode(os);
     }
+
+    // clone the tag, its needed for later processing of primitive types.
+    decodedTag = tag.clone();
+
     byteCount += DecodeUtil.decodeUnknownComponent(is, os);
     value = os.toByteArray();
     return byteCount;
   }
 
+  /**
+   * Provides a readable presentation, used by <code>toString()</code>
+   *
+   * @return String - a readable representation of the object.
+   */
+  private String getReadablePresentation() {
+
+    try {
+      return UnknownTypeHandler.decode(new ByteArrayInputStream(value)).toString();
+    } catch (IOException ioe) {
+      return HexString.fromBytes(value);
+    }
+  }
+
   @Override
   public String toString() {
-    return HexString.fromBytes(value);
+
+    return getReadablePresentation();
   }
 }
