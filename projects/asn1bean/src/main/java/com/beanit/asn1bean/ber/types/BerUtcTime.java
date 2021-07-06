@@ -18,7 +18,9 @@ import com.beanit.asn1bean.ber.types.string.BerVisibleString;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -78,48 +80,63 @@ public class BerUtcTime extends BerVisibleString {
     return codeLength;
   }
 
-  @SuppressWarnings("WeakerAccess")
-  Calendar asCalendar() throws ParseException {
+  public Calendar asCalendar() throws ParseException {
 
     Matcher matcher = utcTimePattern.matcher(super.toString());
 
     if (!matcher.find()) throw new ParseException("", 0);
 
-    String mg;
-    int year = Integer.parseInt(matcher.group("year"));
-    int month = Integer.parseInt(matcher.group("month"));
-    month -= 1; // java.util.Calendar's month goes from 0 to 11
-    int day = Integer.parseInt(matcher.group("day"));
-    int hour = Integer.parseInt(matcher.group("hour"));
-    int minute = Integer.parseInt(matcher.group("minute"));
-    mg = matcher.group("second");
-    int second = mg == null ? 0 : Integer.parseInt(mg);
+    try {
+      String mg;
+      int year = Integer.parseInt(matcher.group("year"));
+      int month = Integer.parseInt(matcher.group("month"));
+      month -= 1; // java.util.Calendar's month goes from 0 to 11
+      int day = Integer.parseInt(matcher.group("day"));
+      int hour = Integer.parseInt(matcher.group("hour"));
+      int minute = Integer.parseInt(matcher.group("minute"));
+      mg = matcher.group("second");
+      int second = mg == null ? 0 : Integer.parseInt(mg);
 
-    mg = matcher.group("timezone");
-    String timeZoneStr = mg.equals("Z") ? "UTC" : "GMT" + mg;
-    TimeZone timeZone = TimeZone.getTimeZone(timeZoneStr);
+      mg = matcher.group("timezone");
+      String timeZoneStr = mg.equals("Z") ? "UTC" : "GMT" + mg;
+      TimeZone timeZone = TimeZone.getTimeZone(timeZoneStr);
 
-    Calendar calendar = Calendar.getInstance(timeZone);
+      Calendar calendar = Calendar.getInstance(timeZone);
 
-    // Add 2000 to the year
-    int century = (calendar.get(Calendar.YEAR) / 100) * 100;
-    year += century;
+      // Add 2000 to the year
+      int century = (calendar.get(Calendar.YEAR) / 100) * 100;
+      year += century;
 
-    // noinspection MagicConstant
-    calendar.set(year, month, day, hour, minute, second);
-    calendar.set(Calendar.MILLISECOND, 0);
+      // noinspection MagicConstant
+      calendar.set(year, month, day, hour, minute, second);
+      calendar.set(Calendar.MILLISECOND, 0);
 
-    return calendar;
+      return calendar;
+    } catch (NumberFormatException e) {
+      throw new ParseException("Cannot parse numeric value", 1);
+    }
   }
 
-  Date asDate() throws ParseException {
+  public Date asDate() throws ParseException {
     return asCalendar().getTime();
+  }
+
+  private String getReadableRepresentation() {
+    try {
+      String pattern = "dd.MM.yyyy-HH:mm:ss";
+
+      DateFormat df = new SimpleDateFormat(pattern);
+
+      return df.format(asDate());
+    } catch (ParseException e) {
+      return "undefined";
+    }
   }
 
   @Override
   public String toString() {
     try {
-      return asDate().toString();
+      return getReadableRepresentation();
     } catch (Exception e) {
       return super.toString();
     }
